@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /.git
+Disallow: /node_modules
+
+Sitemap: https://deuxen.co.uk/sitemap.xml
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: bingbot
+Allow: /
