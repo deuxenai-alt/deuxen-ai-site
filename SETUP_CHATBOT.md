@@ -93,27 +93,37 @@ Your AI receptionist will collect client data and store it in Google Sheets.
 
 ---
 
-## Step 3: Connect the Chatbot to Your Website
+## Step 3: Connect the Chatbot to Your Website (already built ✅)
 
-The "Book a Demo" CTA can open a short form (name, phone, email, company,
-service) that POSTs to your n8n webhook on submit, e.g.:
+Every "Book a Demo" button on the site opens a form (`src/components/ui/demo-form-modal.tsx`)
+collecting name, phone, email, company, industry, and notes. On submit, it
+POSTs JSON to the webhook URL in `VITE_N8N_WEBHOOK_URL`.
 
-```typescript
-const handleDemoForm = async (formData: Record<string, string>) => {
-  const response = await fetch('YOUR_N8N_WEBHOOK_URL', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData),
-  });
+**Until that variable is set, the form falls back to opening the visitor's
+email client** with the details pre-filled — so the site works today, and
+upgrades to the automated Sheets pipeline the moment you activate n8n.
 
-  if (response.ok) {
-    alert("Demo request sent! We'll call you shortly.");
-  }
-};
-```
+### To activate it, once you have your n8n webhook URL:
 
-Once you have a live webhook URL, share it and this can be wired directly
-into the site's CTA button.
+1. Copy `.env.example` to `.env` in the project root:
+   ```bash
+   cd /Users/mano/deuxen-ai-site
+   cp .env.example .env
+   ```
+2. Edit `.env` and paste your webhook URL:
+   ```
+   VITE_N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/abc123
+   ```
+3. **Important:** Vite bakes environment variables in at *build time*, not
+   runtime. Rebuild and redeploy for the change to take effect:
+   ```bash
+   npm run deploy
+   ```
+4. Test it — click "Book a Demo" on https://deuxen.co.uk and submit the
+   form. A new row should appear in your Google Sheet within seconds.
+
+The JSON body sent matches the Google Sheets columns exactly: `name`,
+`phone`, `email`, `company`, `service` (industry), `notes`.
 
 ---
 

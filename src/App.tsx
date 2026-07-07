@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { RobotHero } from "@/components/ui/robot-hero";
+import { DemoFormModal } from "@/components/ui/demo-form-modal";
 import { Features } from "@/components/sections/features";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Industries } from "@/components/sections/industries";
@@ -24,19 +26,15 @@ function ScrollProgress() {
 }
 
 export default function App() {
+  const [demoOpen, setDemoOpen] = useState(false);
+
   return (
     <div className="w-full min-h-screen bg-[#050505]">
       <ScrollProgress />
 
       {/* Hero stays pinned while the content deck slides over it */}
       <div className="sticky top-0 h-dvh">
-        <RobotHero
-          onCtaClick={() =>
-            document
-              .getElementById("contact")
-              ?.scrollIntoView({ behavior: "smooth" })
-          }
-        />
+        <RobotHero onCtaClick={() => setDemoOpen(true)} />
       </div>
 
       <main className="relative z-30 -mt-10 rounded-t-[3rem] bg-[#050505] shadow-[0_-30px_80px_rgba(0,0,0,0.55)]">
@@ -45,9 +43,11 @@ export default function App() {
         <Industries />
         <Results />
         <Testimonials />
-        <CTA />
+        <CTA onBookDemo={() => setDemoOpen(true)} />
         <Footer />
       </main>
+
+      <DemoFormModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   );
 }

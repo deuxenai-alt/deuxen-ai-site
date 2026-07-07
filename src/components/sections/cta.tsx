@@ -3,7 +3,7 @@ import { Reveal } from "@/components/ui/reveal";
 
 const CONTACT_EMAIL = "manojvenkata1999@gmail.com";
 
-export function CTA() {
+export function CTA({ onBookDemo }: { onBookDemo: () => void }) {
   return (
     <section
       id="contact"
@@ -28,13 +28,14 @@ export function CTA() {
             call you — the agent does the talking.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href={`mailto:${CONTACT_EMAIL}?subject=Deuxen%20AI%20Demo%20Request`}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#00ffc6] text-black font-black hover:bg-[#00e5b2] transition-colors shadow-[0_0_30px_rgba(0,255,198,0.35)]"
+            <button
+              type="button"
+              onClick={onBookDemo}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#00ffc6] text-black font-black hover:bg-[#00e5b2] transition-colors shadow-[0_0_30px_rgba(0,255,198,0.35)] cursor-pointer"
             >
               Book a Demo
               <PiPhoneCallBold size={18} />
-            </a>
+            </button>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
               className="inline-flex items-center px-8 py-4 rounded-full border border-white/20 text-white font-semibold hover:bg-white/5 transition-colors"
