@@ -1,5 +1,4 @@
 import { motion, useScroll, useSpring } from "framer-motion";
-import { SEOHead } from "@/components/seo-head";
 import { RobotHero } from "@/components/ui/robot-hero";
 import { Features } from "@/components/sections/features";
 import { HowItWorks } from "@/components/sections/how-it-works";
@@ -26,9 +25,7 @@ function ScrollProgress() {
 
 export default function App() {
   return (
-    <>
-      <SEOHead />
-      <div className="w-full min-h-screen bg-[#050505]">
+    <div className="w-full min-h-screen bg-[#050505]">
       <ScrollProgress />
 
       {/* Hero stays pinned while the content deck slides over it */}
@@ -51,7 +48,6 @@ export default function App() {
         <CTA />
         <Footer />
       </main>
-      </div>
-    </>
+    </div>
   );
 }
