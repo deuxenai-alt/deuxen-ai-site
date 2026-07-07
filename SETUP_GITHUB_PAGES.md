@@ -1,89 +1,89 @@
-# Deploy to GitHub Pages + Connect deuxen.co.uk Domain
+# GitHub Pages Deployment — deuxen.co.uk
 
-## Step 1: Enable GitHub Pages (Web UI)
+## Current Status ✅
 
-1. Go to https://github.com/deuxenai-alt/deuxen-ai-site/settings
-2. Scroll to **"Pages"** section (left sidebar)
-3. Under "Build and deployment":
-   - **Source**: Select `Deploy from a branch`
-   - **Branch**: Select `main` + `/root` folder
-   - Click **Save**
-
-GitHub will automatically build and deploy on every push to main.
-
----
-
-## Step 2: Update Your Domain at LCN (Web UI)
-
-### Option A: Use GitHub's Nameservers (Recommended)
-
-1. **Get GitHub's Nameservers:**
-   - Go back to https://github.com/deuxenai-alt/deuxen-ai-site/settings/pages
-   - You'll see: "Check your DNS settings. You should configure the following..."
-   - Copy the nameservers listed (look like `ns-123.awsdns-45.com`)
-
-2. **Update LCN:**
-   - Log into https://www.lcn.com/ (your domain registrar)
-   - Find your domain settings for `deuxen.co.uk`
-   - Go to **DNS / Nameservers**
-   - Replace all nameservers with GitHub's nameservers
-   - Save changes
-   - **Wait 24-48 hours** for DNS to propagate
-
-### Option B: Use CNAME Record (Faster, if LCN supports it)
-
-1. Log into https://www.lcn.com/
-2. Find DNS records for `deuxen.co.uk`
-3. Add or update CNAME record:
-   - **Name**: `@` or leave blank (root domain)
-   - **Target**: `deuxenai-alt.github.io`
-4. Save and wait 5-15 minutes for propagation
+- **Live now (GitHub default URL):** https://deuxenai-alt.github.io/deuxen-ai-site/
+- **Custom domain configured:** `deuxen.co.uk` (DNS records added at LCN,
+  propagating — usually live within a few hours, can take up to 24-48h)
+- **Deploy method:** `gh-pages` npm package pushes the built `dist/` folder
+  to a `gh-pages` branch; GitHub Pages serves directly from that branch
+- **HTTPS:** GitHub automatically issues a free certificate once it verifies
+  the DNS — no action needed
 
 ---
 
-## Step 3: Verify It's Working
+## DNS Records (already added at LCN)
 
-Once DNS propagates:
+Since `deuxen.co.uk` is an apex/root domain (no `www.`), it uses **A
+records** pointing at GitHub's IPs (a CNAME isn't valid at the zone apex):
 
-1. Visit https://deuxen.co.uk in your browser
-2. You should see your Deuxen AI site
-3. Go back to GitHub Settings > Pages
-4. You should see a green checkmark: "Your site is published at https://deuxen.co.uk"
+| Type | Host | Value |
+|------|------|-------|
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+
+The existing `www` CNAME, email SPF (TXT), and MX records were left
+untouched — email is unaffected.
 
 ---
 
-## Making Changes & Auto-Deploying
+## Deploying Updates
 
-Every time you push to `main`:
+Every time you want to publish changes:
 
 ```bash
-git add .
-git commit -m "Update: add new feature"
-git push origin main
+cd /Users/mano/deuxen-ai-site
+npm run deploy
 ```
 
-GitHub automatically rebuilds and deploys within 1-2 minutes. Your site updates live at https://deuxen.co.uk.
+This runs `npm run build` (via the `predeploy` hook) then pushes the fresh
+`dist/` output to the `gh-pages` branch. GitHub Pages picks it up within a
+minute or two — no separate CI step required.
+
+Keep committing source changes to `main` as usual with `git push origin
+main`; `main` is your source of truth, `gh-pages` is just the built output.
+
+---
+
+## Verify It's Live
+
+1. https://github.com/deuxenai-alt/deuxen-ai-site/settings/pages should show
+   "Your site is live at http://deuxen.co.uk/" once DNS + HTTPS finish
+2. Check DNS propagation anytime at https://dnschecker.org/ (search
+   `deuxen.co.uk`, type `A`)
+3. Visit https://deuxen.co.uk directly once propagated
 
 ---
 
 ## Troubleshooting
 
-**"Site not found" after 24 hours:**
-- Wait another 24 hours (DNS caches can be slow)
-- Check that CNAME file exists: `public/CNAME` should contain `deuxen.co.uk`
-- Verify the branch and folder are correct in GitHub Settings > Pages
+**Site not loading after a few hours:**
+- Recheck the 4 A records at LCN character-for-character
+- Confirm no leftover conflicting A record still points to the old LCN
+  parking IP
 
-**"DNS is configured but site still broken:**
-- Go to https://mxtoolbox.com/
-- Look up: `deuxen.co.uk`
-- Verify it's pointing to GitHub's servers
+**"Domain's DNS could not be retrieved" in GitHub Pages settings:**
+- Give it more time — some registrars propagate slowly
+- Re-verify at https://dnschecker.org/
 
-**Need SSL/HTTPS:**
-- GitHub Pages handles this automatically with free SSL certificates once DNS is configured
-- Your site will auto-upgrade to https:// once domain is verified
+**HTTPS not available yet:**
+- Automatic once GitHub verifies DNS; can take up to an hour after DNS
+  first resolves correctly
+
+---
+
+## Optional Upgrade: GitHub Actions CI/CD
+
+Right now deploys are manual (`npm run deploy`). A GitHub Actions workflow
+that auto-builds and deploys on every push to `main` is possible, but it
+requires granting the `workflow` OAuth scope to the GitHub CLI token
+(`gh auth refresh -s workflow`), which needs a one-time browser
+authorization. Not set up yet — ask if you want this automated.
 
 ---
 
 ## Next: Set Up Chatbot (n8n + Google Sheets)
 
-See `SETUP_CHATBOT.md` for chatbot integration.
+See `SETUP_CHATBOT.md` for chatbot and client-database integration.
